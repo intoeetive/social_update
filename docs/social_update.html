@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+  <title>Social Update</title>
+
+  <style type="text/css" media="screen,print">@import url("docs.css");</style>
+<META http-equiv=Content-Type content="text/html; charset=utf-8"></head>
+
+<body>
+<div><a name="top"></a></div>
+
+<div id="header">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%;"><tr>
+<td class="docheading" style="width:300px;"><h1 style="font-size: 18px; font-weight: bold;">intoEEtive.com</h1></td>
+<td class="searchbox">
+
+</td>
+</tr>
+</table>
+</div>
+
+
+<div id="navlinks">
+<a href="http://www.intoeetive.com/">intoEEtive.com</a> &gt;
+<a href="http://www.intoeetive.com/index.php/category/extending_ee">EE add-ons</a> &gt;
+<a href="http://www.intoeetive.com/index.php/comments/social-update">Social Update</a>
+</div>
+
+
+<div id="content">
+
+	<h1>Social Update</h1>
+
+	<p>Authomatically send updates to Twitter and Facebook when ExpressionEngine entry is published.</p>
+ <ul>
+     <li><a href="#install">Installation</a>
+     <li><a href="#settings">Settings</a>
+     <li><a href="#usage">Usage</a>
+     <li><a href="#tags">Template tags</a>
+ </ul>
+
+ 	<h2><a name="install"></a>Installation</h2>
+    
+<p>Upload 'social_update' and 'shorteen' folders to your 'third_party' folder. When you install Social Update module, Shorteen will also be installed authomatically.</p>    
+ 
+ 	<h2><a name="settings"></a>Settings</h2>
+    
+<p>To start using Social Update, you need to provide settings for the module in Control Panel.</p>
+<p>To get your site authorized for <strong>Twitter</strong> posts, enter your Consumer Key and Consumer Secret  for Twitter API. If you don't have API key &amp; secret, you can obtain them here: <a href="https://dev.twitter.com/apps/new" target="_blank">https://dev.twitter.com/apps/new</a>. The application Access level should be set to "Read and write". Make sure you specify something as callback URI in Twitter app settings. Though it will be overridden, this field should not be empty.</p>
+<p>After you enter those, click 'Authorize' button below. You will be redirected to Twitter page asking to authorize your site. After you confirm, fields for Access token and Token secret will be filled with appropriate values. Click 'Save' button at the bottom to save token and token secret.</p>
+<p>To get your site authorized for <strong>Facebook</strong> posts, enter your Application ID and Secret Key for Facebook API. If you don't have API App ID &amp; secret, you can obtain them here: <a href="http://developers.facebook.com/setup/" target="_blank">http://developers.facebook.com/setup/</a>.</p>
+<p>After you enter those, click 'Authorize' button below. You will be redirected to Facebook page asking to authorize your site. After you confirm, Access token will be authomatically entered with appropriate values. If you administer several pages on Facebook, you are able to choose where you want to post. Do not forget to lick 'Save' again to save that value.</p>
+
+<p>To get your site authorized for <strong>LinkedIn</strong> posts, enter your API Key and Secret Key for LinkedIn API. If you don't have API App ID &amp; secret, you can obtain them here: <a href="https://www.linkedin.com/secure/developer" target="_blank">https://www.linkedin.com/secure/developer</a>.</p>
+<p>After you enter those, click 'Authorize' button below. You will be redirected to LinkedIn page asking to authorize your site. After you confirm, Access token will be authomatically entered with appropriate values.  Click 'Save' button at the bottom to save token and token secret.</p>
+
+<p>You also have to provide the desired service you would like to use for links shortening. For detailed shortening setup, go to Shorteen module settings.</p>
+<p>By default, update to social network is sent when entry is published/saved with "open" status. However you can select multiple trigger statuses in module settings.</p>
+
+<p class="important">You'll need to click "Save" each time after authorizing a social network.</p>
+
+<p>If you want to reset tokens to empty values, clean up API key pair field and click Authorize.</p>
+ 
+	<h2><a name="usage"></a>Usage</h2>
+
+<p>Social Update create new tab on entry publish/edit page in Control Panel.</p>
+<p>On that tab, you are able to provide text that will posted to Twitter and/or Facebook when the entry is first saved with 'open' status. If the text is not entered, then update to social network is not sent.</p>
+<p>The link to entry page is included authomatically and is shortened (with the help of Shorteen module). You are able to specify how your URLs are formed - based on URL Title, Entry ID or Pages or Structure module (if installed). Channel settings are taken into consideration.
+</p>
+<p>You can also choose to not include entry link with the message.</p>
+
+
+	<h2><a name="tags"></a>Template tags</h2>
+    
+<p>Use <strong>{exp:social_update:data}</strong> tag to display data of posts to social networks for given entry.</p>    
+    
+<code>
+{exp:channel:entries}<br />
+{if no_results}<br />
+&lt;p&gt;No such entry&lt;/p&gt;<br />
+{/if}<br />
+&lt;h1&gt;{title}&lt;/h1&gt;<br />
+{exp:social_update:data entry_id="{entry_id}"}<br />
+{if no_results}<br />
+&lt;p&gt;No posts to social networks&lt;/p&gt;<br />
+{/if}<br />
+{if facebook_post}<br />
+&lt;p&gt;&lt;a href="{post_link}"&gt;Facebook post&lt;/a&gt; ({post_date format="%Y-%m-%d"}):<br />
+&lt;em&gt;{post_text}&lt;/em&gt;&lt;/p&gt;<br />
+{/if} <br />
+{if twitter_post}<br />
+&lt;p&gt;&lt;a href="{post_link}"&gt;Tweet&lt;/a&gt; ({post_date format="%Y-%m-%d"}):<br />
+&lt;em&gt;{post_text}&lt;/em&gt;&lt;/p&gt;<br />
+{/if} <br />
+{/exp:social_update:data}<br />
+{/exp:channel:entries}
+</code>
+
+<p><strong>Tag parameters</strong>:
+<ul>
+<li><dfn>entry_id</dfn> &mdash; the ID of entry to fetch associated social posts data. Required.</li>
+</ul>
+</p>
+
+<p><strong>Conditional variables:</strong>
+<ul>
+<li><dfn>{if no_results}{/if}</dfn> &mdash; displayed if there are no posts data to show</li>
+<li><dfn>{if twitter_post}{/if}</dfn> &mdash; displayed if current data row represents Twitter post</li>
+<li><dfn>{if facebook_post}{/if}</dfn> &mdash; displayed if current data row represents Facebook post</li>
+
+</ul>
+</p>
+
+<p><strong>Single variables:</strong>
+<ul>
+<li><dfn>post_link</dfn> &mdash; the link to post on social network</li>
+<li><dfn>post_id</dfn> &mdash; the ID of post on social network</li>
+<li><dfn>post_text</dfn> &mdash; the text that has been posted to Twitter/Facebook</li>
+
+<li><dfn>post_date format="%Y-%m-%d"</dfn> &mdash; the date when post has been made. Standard EE date formatting rules apply.</li>
+</ul>
+</p>    
+
+
+
+
+
+
+
+</div>
+
+
+<p class="center"><a href="#top">Top of page</a></p>
+
+<!-- {user_guide_comments} -->
+
+<div id="footer">
+  <address>Copyright &copy; 2011 Yuri Salimovskiy <a href="http://www.intoeetive.com/">intoEEtive.com</a></address>
+</div>
+
+</body>
+</html>
