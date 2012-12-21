@@ -122,6 +122,57 @@ $lang = array(
 "disable_javascript" =>
 "Disable javascript characters counter",
 
+'provide_module_settings' =>
+'Please provide and save settings for Social Update module',
+
+'provider' =>
+'Social network',
+
+'url_type' =>
+'URL type',
+
+'url_auto_url_title' =>
+'Automatic, based on Comment Page URL/Channel URL + URL Title',
+
+'url_auto_entry_id' =>
+'Automatic, based on Comment Page URL/Channel URL + Entry ID',
+
+'url_auto_pages' =>
+'Automatic, based on Pages module',
+
+'url_auto_structure' =>
+'Automatic, based on Structure module',
+
+'url_manual' =>
+'Manually entered',
+
+'show_url_field' =>
+'Show input to override URL',
+
+'select_provider' =>
+'You need to select a social network to post to',
+
+'new_app'	=>
+'Add new app',
+
+'social_update_is_now_fieldtype' =>
+'Social Update is now a fieldtype. You should create custom channel fields in order to post to social networks. Please see the docs for more details.',
+
+'add' =>
+'Add',
+
+'cron_job_url' =>
+'CRON job URL',
+
+'url_override' =>
+'(overrides automatically generated)',
+
+'default_url_type' =>
+'Default URL type',
+
+'force_url_shortening' =>
+'Force URL shortening',
+
 /* END */
 ''=>''
 );

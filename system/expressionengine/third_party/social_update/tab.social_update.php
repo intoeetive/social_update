@@ -54,8 +54,7 @@ class Social_update_tab {
 
 	function publish_tabs($channel_id, $entry_id = '')
 	{
-
-		$tab_settings = array();
+		return array();
 		
 		$theme_folder_url = trim($this->EE->config->item('theme_folder_url'), '/').'/third_party/social_update/';
 		
@@ -136,6 +135,7 @@ $('#social_update__social_update_linkedin').maxlength({
            'field_text_direction' => 'ltr',
            'field_type' => 'select'
         );
+        $tab_settings['string_override'] = lang('social_update_is_now_fieldtype');
         
         foreach ($this->providers as $provider)
         {
@@ -178,7 +178,7 @@ $('#social_update__social_update_linkedin').maxlength({
                 $set['string_override'] = '<p>'.$data["$provider"]->post.' <a href="'.$data["$provider"]->url.'">'.$data["$provider"]->url.'</a></p><p><em>'.lang('sent_on').$this->EE->localize->decode_date($datestr, $data["$provider"]->post_date, TRUE).'</em></p>';
                 
             }
-            $tab_settings[] = $set;
+            
         }
 
 		return $tab_settings;
@@ -193,7 +193,10 @@ $('#social_update__social_update_linkedin').maxlength({
     
 	function publish_data_db($params)
 	{     
-        if (isset($params['mod_data']['social_update_url_base']))
+        return; 
+        
+        
+		if (isset($params['mod_data']['social_update_url_base']))
         {
             $url_base = $params['mod_data']['social_update_url_base'];
         }

@@ -34,36 +34,70 @@
 
 	<h1>Social Update</h1>
 
-	<p>Authomatically send updates to Twitter and Facebook when ExpressionEngine entry is published.</p>
+	<p>Automatically send updates to Twitter and Facebook when ExpressionEngine entry is published.</p>
+	
+	<p class="important">Since version 1.0 Social Update is intended to be used as a custom channel field(s) and not a publish tab</p>
+	
  <ul>
-     <li><a href="#install">Installation</a>
-     <li><a href="#settings">Settings</a>
-     <li><a href="#usage">Usage</a>
-     <li><a href="#tags">Template tags</a>
+     <li><a href="#install">Installation</a></li>
+     <li><a href="#settings">Setting up</a>
+		 <ul>
+		 	<li><a href="#settings">Settings</a></li>
+			<li><a href="#authorize">Adding social accounts</a></li>
+		 	<li><a href="#fields">Adding custom fields</a></li>
+		 	<li><a href="#scheduled">Scheduled posting</a></li>
+		 </ul>
+	 </li>
+     <li><a href="#tags">Template tags</a></li>
  </ul>
 
  	<h2><a name="install"></a>Installation</h2>
     
-<p>Upload 'social_update' and 'shorteen' folders to your 'third_party' folder. When you install Social Update module, Shorteen will also be installed authomatically.</p>    
+<p>Upload 'social_update' and 'shorteen' folders to your 'third_party' folder. The Social Update addon consists of module, fieldtype and extension - make sure you install all 3 of them.<br />
+When you install Social Update, Shorteen will also be installed automatically.</p>    
  
- 	<h2><a name="settings"></a>Settings</h2>
+ 	<h2><a name="settings"></a>Setting up</h2>
     
-<p>To start using Social Update, you need to provide settings for the module in Control Panel.</p>
+    <h3>Settings</h3>
+    
+<p>The 'general' settings include entry statuses that will trigger social update (by default, social posts are made only for entries with 'open' status).</p>   
+<p>You also have to provide the desired service you would like to use for links shortening. For detailed shortening setup, go to Shorteen module settings.</p> 
+<p>By default, the links are only shortened if the total length of post + link is greater than size allowed by social network. If you want to force links to be always shortened, you have an option to do so.</p>
+<p>The fieldtype includes dynamic characters counter showing how many characters you can enter for the post. If you need to disable it, you have option to do so.</p>
+<p>You can also specify the default URL scheme that your site follows (can be changed on per-custom-field basis).</p>
+
+ 	<h3><a name="authorize"></a>Adding social accounts</h3>
+    
+ 
+<p>To add a social account, select Social network in "Add new app settings" box and click <strong>Add</strong>. You will be presented with 2 fields for App key and secret (might be named differently for different social networks). After you enther those (the details on obtaining thems are described below) click <strong>Authorize</strong>. After authorization, you'll be redirected back to settings page, and then you should click <strong>Save</strong>.</p>
 <p>To get your site authorized for <strong>Twitter</strong> posts, enter your Consumer Key and Consumer Secret  for Twitter API. If you don't have API key &amp; secret, you can obtain them here: <a href="https://dev.twitter.com/apps/new" target="_blank">https://dev.twitter.com/apps/new</a>. The application Access level should be set to "Read and write". Make sure you specify something as callback URI in Twitter app settings. Though it will be overridden, this field should not be empty.</p>
-<p>After you enter those, click 'Authorize' button below. You will be redirected to Twitter page asking to authorize your site. After you confirm, fields for Access token and Token secret will be filled with appropriate values. Click 'Save' button at the bottom to save token and token secret.</p>
+
 <p>To get your site authorized for <strong>Facebook</strong> posts, enter your Application ID and Secret Key for Facebook API. If you don't have API App ID &amp; secret, you can obtain them here: <a href="http://developers.facebook.com/setup/" target="_blank">http://developers.facebook.com/setup/</a>.</p>
-<p>After you enter those, click 'Authorize' button below. You will be redirected to Facebook page asking to authorize your site. After you confirm, Access token will be authomatically entered with appropriate values. If you administer several pages on Facebook, you are able to choose where you want to post. Do not forget to lick 'Save' again to save that value.</p>
+<p>If you administer several pages on Facebook, you are able to choose where you want to post after authorizing.</p>
 
 <p>To get your site authorized for <strong>LinkedIn</strong> posts, enter your API Key and Secret Key for LinkedIn API. If you don't have API App ID &amp; secret, you can obtain them here: <a href="https://www.linkedin.com/secure/developer" target="_blank">https://www.linkedin.com/secure/developer</a>.</p>
-<p>After you enter those, click 'Authorize' button below. You will be redirected to LinkedIn page asking to authorize your site. After you confirm, Access token will be authomatically entered with appropriate values.  Click 'Save' button at the bottom to save token and token secret.</p>
 
-<p>You also have to provide the desired service you would like to use for links shortening. For detailed shortening setup, go to Shorteen module settings.</p>
-<p>By default, update to social network is sent when entry is published/saved with "open" status. However you can select multiple trigger statuses in module settings.</p>
+<p>You can add as many social accounts as you need, but one custom channel field is always used for one account.</p>   
 
-<p class="important">You'll need to click "Save" each time after authorizing a social network.</p>
-
-<p>If you want to reset tokens to empty values, clean up API key pair field and click Authorize.</p>
+<p>If you want to remove an account, clean up API key/secret pair fields and Save.</p>
  
+  	<h3><a name="fields"></a>Adding custom fields</h3>
+  	
+<p>Social Update allows you to use custom channel fields to enter the content of post to be made to social network (and optionally URL).</p>
+<p>Custom fields can be used on Publish page in Control Panel and in Safecracker. You can also use them in Matrix.</p>  	
+
+<p>There are 3 settings for custom field of Social Update type:</p>
+<p><strong>Social network</strong> - the wall/page to post to (pre-authorized on module settings page)</p>
+<p><strong>URL type</strong> - select the method that should be used to generate URL attached to the post. If you select any automatic module, make sure the Comment page URL/Channel URL are set in channel preferences.</p>
+<p><strong>Show input to override URL</strong> - if checked, editors will be able to enter URL to include with the post (will override automatically generated). This might be useful in some cases, e.g. if you include category name within page URL. Note this needs to be full URL, starting with http://</p>
+ 
+  	<h3><a name="scheduled"></a>Scheduled posting</h3>
+  	
+ <p>The post is made when both of following conditions are met: the entry status is in the list of trigger statuses defined in Control Panel and entry date is in the past.</p>
+ <p>Usually this is right after entry is added, but if you are publishing an entry with entry date in the future, the social post will not be made when entry is added. If will be made only after entry date has been reached.</p>
+ <p>If you use publishing with entry dates in the future, you'll need to set up CRON job on your server that will fetch the URL mentioned as "Cron Job URL" on module settings page. It will check the entry dates and post social update, if needed.</p>
+ <p>If you don't have access to CRON, you can still use delayed posting - the check is made each time any entry is edited in Control Panel (so you basically need it only if you want to be sure the post is made at certain time).</p>
+  	
 	<h2><a name="usage"></a>Usage</h2>
 
 <p>Social Update create new tab on entry publish/edit page in Control Panel.</p>
@@ -75,7 +109,37 @@
 
 	<h2><a name="tags"></a>Template tags</h2>
     
-<p>Use <strong>{exp:social_update:data}</strong> tag to display data of posts to social networks for given entry.</p>    
+<p>The Social Update custom fields can be used in templates using pair tags, e.g. <strong>{my_custom_field}...{/my_custom_field}</strong></p>   
+
+<code>
+{twitter_post}<br />
+{post}<br />
+{if posted}<br />
+&lt;em&gt;Posted as {remote_user} at {post_date format="%Y-%m-%d %H:%i"}. &lt;a href="{post_link}" target="_blank"&gt;Link&lt;/a&gt;&lt;/em&gt;<br />
+{if:else}<br />
+&lt;em&gt;Not posted yet&lt;/em&gt;<br />
+{/if}<br />
+{/twitter_post}<br />
+</code>
+
+<p><strong>Conditional variables:</strong>
+<ul>
+<li><dfn>{if posted}{/if}</dfn> &mdash; displayed if post has been already made (not just scheduled)</li>
+</ul>
+</p>
+
+<p><strong>Single variables:</strong>
+<ul>
+<li><dfn>post</dfn> &mdash; the text of the post</li>
+<li><dfn>url</dfn> &mdash; included URL</li>
+<li><dfn>remote_user</dfn> &mdash; social account username</li>
+<li><dfn>remote_post_id</dfn> &mdash; the ID of post on social network</li>
+<li><dfn>post_date format="%Y-%m-%d"</dfn> &mdash; the date when post has been made. Standard EE date formatting rules apply.</li>
+</ul>
+</p>    
+
+    
+<p>You can also use <strong>{exp:social_update:data}</strong> tag to display data of all posts to social networks for given entry.</p>    
     
 <code>
 {exp:channel:entries}<br />
@@ -110,6 +174,7 @@
 <li><dfn>{if no_results}{/if}</dfn> &mdash; displayed if there are no posts data to show</li>
 <li><dfn>{if twitter_post}{/if}</dfn> &mdash; displayed if current data row represents Twitter post</li>
 <li><dfn>{if facebook_post}{/if}</dfn> &mdash; displayed if current data row represents Facebook post</li>
+<li><dfn>{if linkedin_post}{/if}</dfn> &mdash; displayed if current data row represents LinkedIn post</li>
 
 </ul>
 </p>
@@ -138,7 +203,7 @@
 <!-- {user_guide_comments} -->
 
 <div id="footer">
-  <address>Copyright &copy; 2011 Yuri Salimovskiy <a href="http://www.intoeetive.com/">intoEEtive.com</a></address>
+  <address>Copyright &copy; 2012 Yuri Salimovskiy <a href="http://www.intoeetive.com/">intoEEtive.com</a></address>
 </div>
 
 </body>
