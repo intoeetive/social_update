@@ -32,7 +32,7 @@ class Social_update_ft extends EE_Fieldtype {
 		'version'	=> SOCIAL_UPDATE_ADDON_VERSION
 	);
 	
-	 var $maxlen 	= array(
+	var $maxlen 	= array(
                         'twitter'  => 140,
                         'facebook' => 420,
                         'linkedin' => 700
@@ -64,7 +64,7 @@ class Social_update_ft extends EE_Fieldtype {
 
 	
 	
-	function display_settings($data)
+	function _prepare_settings($data)
     {
 		
 		/*if (empty($this->module_settings))
@@ -72,53 +72,76 @@ class Social_update_ft extends EE_Fieldtype {
 			show_error(lang('provide_module_settings'));
 		}*/
 		
-		$providers = array();
+		$data['providers'] = array();
 		foreach ($this->module_settings as $setting_name=>$setting)
         {
             if (is_array($setting) && $setting_name!='trigger_statuses')
 			{
 				if ($setting["provider"]!='')
 	            {
-	            	$providers["$setting_name"] = $setting['username']." - ".lang($setting['provider']);
-	            	if ($setting['post_as_page']) $providers["$setting_name"] .= " (".lang('post_as_page').")";
+	            	if ($setting['username']!='')
+	            	{
+						$this->EE->db->select('display_name')
+		                            ->from('exp_social_update_accounts')
+		                            ->where('service', $setting['provider'])
+		                            ->where('userid', $setting['username'])
+		                            ->limit(1);
+		                $display_name_q = $this->EE->db->get();
+		                if ($display_name_q->num_rows()>0)
+		                {
+		                    $setting['username'] = $display_name_q->row('display_name');
+		                }
+      				}
+					$data['providers']["$setting_name"] = $setting['username']." - ".lang($setting['provider']);
+	            	if ($setting['post_as_page']) $data['providers']["$setting_name"] .= " (".lang('post_as_page').")";
 	            }
     		}
         }
     
         $data["provider"] = (isset($data["provider"])) ? $data["provider"] : ''; 
-        
-        $this->EE->table->add_row(
-            lang("provider", "provider"), form_dropdown("provider", $providers, $data["provider"])
-            );
 
-        $url_options = array('url_title'=>lang('url_auto_url_title'), 'entry_id'=>lang('url_auto_entry_id'));
+        $data['url_options'] = array('url_title'=>lang('url_auto_url_title'), 'entry_id'=>lang('url_auto_entry_id'));
         $this->EE->db->select('module_id'); 
         $query = $this->EE->db->get_where('modules', array('module_name' => 'Pages')); 
         if ($query->num_rows()>0) 
 		{
-			$url_options['pages'] = lang('url_auto_pages');
+			$data['url_options']['pages'] = lang('url_auto_pages');
 		}
         $this->EE->db->select('module_id'); 
         $query = $this->EE->db->get_where('modules', array('module_name' => 'Structure')); 
         if ($query->num_rows()>0) 
 		{
-			$url_options['structure'] = lang('url_auto_structure');
+			$data['url_options']['structure'] = lang('url_auto_structure');
 		}
-        $url_options['channel_url'] = lang('channel_url');
-        $url_options['site_url'] = lang('site_url');
-        $url_options['manual'] = lang('url_manual');
+        $data['url_options']['channel_url'] = lang('channel_url');
+        $data['url_options']['site_url'] = lang('site_url');
+        $data['url_options']['manual'] = lang('url_manual');
         
 		$data["url_type"] = (isset($data["url_type"])) ? $data["url_type"] : $this->module_settings['default_url_type']; 
-		$show_url_field = (isset($data["show_url_field"]) && $data["show_url_field"]=='y') ? true:false; 
+		$data['show_url_field'] = (isset($data["show_url_field"]) && $data["show_url_field"]=='y') ? true:false; 
+		
+		return $data;
+	
+	}
+		
+		
+	function display_settings($data)
+	{
+		
+		$data = $this->_prepare_settings($data);
+		
+		$this->EE->table->add_row(
+            lang("provider", "provider"), form_dropdown("provider", $data['providers'], $data["provider"])
+            );
         
         $this->EE->table->add_row(
-            lang("url_type", "url_type"), form_dropdown("url_type", $url_options, $data["url_type"])
+            lang("url_type", "url_type"), form_dropdown("url_type", $data['url_options'], $data["url_type"])
             );    
             
         $this->EE->table->add_row(
-            lang("show_url_field", "show_url_field"), form_checkbox("show_url_field", 'y', $show_url_field)
+            lang("show_url_field", "show_url_field"), form_checkbox("show_url_field", 'y', $data['show_url_field'])
             );   
-        
+            
         $js = "
 $('#ft_social_update select[name=url_type]').change(function(){
 	if ($(this).val()=='manual') {
@@ -135,6 +158,7 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 	$('#ft_social_update input[name=show_url_field]').attr('readonly', 'readonly');
 }
 		";
+		
 		$this->EE->javascript->output($js);
             
     } 
@@ -156,11 +180,11 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 		$row = array(
 			'post'	=> '',
 			'url'	=> '',
-			'post_date'	=> ''
+			'post_date'	=> 0
 		);
 		if (!empty($data))
 		{
-			$q = $this->EE->db->select('post, url, post_date')
+			$q = $this->EE->db->select('service, post, url, post_date')
 					->from('social_update_posts')
 					->where('post_id', $data)
 					->get();
@@ -173,9 +197,47 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 		$name = (isset($this->cell_name)) ? $this->cell_name : $this->field_name;
 		$disabled = ($row['post_date']!=0)?' disabled="disabled"':'';
 
-		$input = 	form_textarea($name, $row['post'], $disabled);
+		$field_id_attr = "field_id_".$this->field_id;
+		if (isset($this->col_id)) $field_id_attr .= '_'.$this->col_id;
 		
-		if ($this->settings['show_url_field']=='y')
+		$input = 	form_textarea($name, $row['post'], ' rows="6" id="'.$field_id_attr.'"'.$disabled);
+		
+		if ($row['post_date']==0 && !isset($this->col_id) && (!isset($this->module_settings['disable_javascript']) ||  $this->module_settings['disable_javascript']!='y'))
+		{
+	        $theme_folder_url = trim($this->EE->config->item('theme_folder_url'), '/').'/third_party/social_update/';
+	        if (isset($row['service']))
+	        {
+	        	$service = $row['service'];
+	        }
+	        else
+	        {
+	        	$service = $this->module_settings[$this->settings['provider']]['provider'];
+	        }
+			$this->EE->cp->add_to_foot('<link type="text/css" href="'.$theme_folder_url.'jquery.maxlength.css" rel="stylesheet" />');
+	        $this->EE->cp->add_to_foot('<script type="text/javascript" src="'.$theme_folder_url.'jquery.maxlength.min.js"></script>');
+	
+	        $js = "
+$('#".$field_id_attr."').maxlength({ 
+    max: ".$this->maxlen[$service].",
+    truncate: true,
+    showFeedback: true,
+    feedbackTarget: '#chars_avail_".$field_id_attr."',
+    feedbackText: '{r}'
+});  
+        ";
+        	$char_counter = str_replace('<span id="total">120</span>', '<span class="total_chars" id="chars_total_'.$field_id_attr.'">'.$this->maxlen[$service].'</span>', lang('char_counter'));
+        	$char_counter = str_replace('<span id="avail">120</span>', '<span class="avail_chars" id="chars_avail_'.$field_id_attr.'">'.$this->maxlen[$service].'</span>', $char_counter);
+        	$input .= '<p>'.$char_counter.'</p>';
+        	
+
+	        $this->EE->javascript->output($js);
+	        
+	        
+		}
+
+		
+		
+		if ((isset($this->settings['show_url_field'])) && $this->settings['show_url_field']=='y')
 		{
         	$label = lang('url').NBS;
         	if ($this->settings['url_type']!='manual')
@@ -240,9 +302,10 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 		$vars = array();
 		foreach ($q->result_array() as $row)
 		{
+
 			$row['post'] = $this->EE->typography->parse_type($row['post']);
 	        //conditional whether is posted or not
-	        $vars['posted'] = ($row['post_date']!=0) ? true : false;
+	        $row['posted'] = ($row['post_date']!=0) ? true : false;
 	        switch ($row['service'])
 	        {
 	        	case 'twitter':
@@ -259,7 +322,7 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 		}
         
         $tagdata = $this->EE->TMPL->parse_variables($tagdata, $vars);
-        
+ 
         return $tagdata;
 	}
 	
@@ -269,9 +332,12 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 		//just cache the data here, as we need entry ID
 		$name = (isset($this->cell_name)) ? $this->cell_name : $this->field_name;
 
-		$this->EE->session->cache['social_update'][$this->field_id] = $data;
-		$this->EE->session->cache['social_update']['override_url'] = $this->EE->input->post($name.'_social_update_url');
-		
+		if ($data!='')
+		{
+			$this->EE->session->cache['social_update'][$name] = $data;
+			$this->EE->session->cache['social_update'][$name.'_override_url'] = $this->EE->input->post($name.'_social_update_url');
+		}
+
 		unset($_POST[$name.'_social_update_url']);
 		unset($_POST[$name]);				
 
@@ -280,20 +346,20 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
     
     function save($data)
 	{				
-
 		return '';
 	}
 	
 	
 	function post_save($data)
 	{
-
+		$name = (isset($this->cell_name)) ? $this->cell_name : $this->field_name;
+		
 		$entry_id = $this->settings['entry_id'];
-		$data = $this->EE->session->cache['social_update'][$this->field_id];
+		$data = (isset($this->EE->session->cache['social_update'][$name]))?$this->EE->session->cache['social_update'][$name]:'';
 
 		//if field is empty, return
 		
-		if ($data=='')
+		if ($data=='' && !isset($this->cell_name))
 		{
 			return;
 		}
@@ -309,9 +375,9 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 		
 		//if this is a new entry, and submitted URL is no different that auto-generated?
 		//if it's not 'manual' we should add url_title, entry_id, page_url etc. to it
-		if ($this->EE->session->cache['social_update']['override_url']!='')
+		if (isset($this->EE->session->cache['social_update'][$name.'_override_url']) && $this->EE->session->cache['social_update'][$name.'_override_url']!='')
 		{
-			$url = $this->EE->session->cache['social_update']['override_url'];
+			$url = $this->EE->session->cache['social_update'][$name.'_override_url'];
 		}
 		else
 		{
@@ -345,52 +411,85 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 		}
 		
 		//is there an unposted record in database for this entry?
-		$q = $this->EE->db->select('post_id, post_date')
+		$post_date = 0;		
+		$this->EE->db->select('post_id, post_date')
 				->from('social_update_posts')
 				->where('entry_id', $entry_id)
-				->where('field_id', $this->field_id)
-				->get();
+				->where('field_id', $this->field_id);
+		if (isset($this->col_id))
+		{
+			$this->EE->db->where('col_id', $this->col_id);
+			$this->EE->db->where('row_id', $this->row_id);
+		}
+		$q = $this->EE->db->get();
 		if ($q->num_rows()>0)
 		{
-			if ($q->row('post_date')!=0)
-			{
-				//already posted, so we quit
-				return;
-			}
-			
 			$post_id = $q->row('post_id');
+			$post_date = $q->row('post_date');
 			
 			//if it has been not posted, update it
-			$upd = array();
-			$upd['post'] = $data;
-			$upd['url'] = $url;
-			
-			$this->EE->db->where('post_id', $post_id);
-			$this->EE->db->update('social_update_posts', $upd);
+			if ($data!='')
+			{
+				$upd = array();
+				$upd['post'] = $data;
+				$upd['url'] = $url;
+				
+				$this->EE->db->where('post_id', $post_id);
+				$this->EE->db->update('social_update_posts', $upd);
+			}
 			
 		}
 		else
 		{
-			
-			//if no record, prepare new post
-			$insert = array(
-				'site_id'			=> $this->EE->config->item('site_id'),
-				'channel_id'		=> $entry_data['channel_id'],
-				'entry_id'			=> $entry_id,
-				'field_id'			=> $this->field_id,
-				'service'			=> $service,
-				'post'				=> $data,
-				'url'				=> $url
-			);
-			$this->EE->db->insert('social_update_posts', $insert);
-			
-			$post_id = $this->EE->db->insert_id();
+			if ($data!='')
+			{
+				//if no record, prepare new post
+				$insert = array(
+					'site_id'			=> $this->EE->config->item('site_id'),
+					'channel_id'		=> $entry_data['channel_id'],
+					'entry_id'			=> $entry_id,
+					'field_id'			=> $this->field_id,
+					'col_id'			=> (isset($this->col_id))?$this->col_id:0,
+					'row_id'			=> (isset($this->row_id))?$this->row_id:0,
+					'service'			=> $service,
+					'post'				=> $data,
+					'url'				=> $url
+				);
+				$this->EE->db->insert('social_update_posts', $insert);
+				
+				$post_id = $this->EE->db->insert_id();
+			}
 			
 		}
-		
+	
 		//update the field with post id
-		$this->EE->db->where('entry_id', $entry_id);
-		$this->EE->db->update('channel_data', array('field_id_'.$this->field_id => $post_id));	
+		if (isset($this->col_id) && isset($post_id))
+		{
+			//matrix is updated always, even if had record before (because is is reset)
+			$this->EE->db->where('row_id', $this->row_id);
+			$this->EE->db->where('entry_id', $entry_id);
+			$this->EE->db->where('field_id', $this->field_id);
+			$this->EE->db->update('matrix_data', array('col_id_'.$this->col_id => $post_id));	
+		}
+		elseif (isset($post_id))
+		{
+			//entry is updated only if not posted
+			$this->EE->db->where('entry_id', $entry_id);
+			$this->EE->db->update('channel_data', array('field_id_'.$this->field_id => $post_id));	
+		}
+		
+		if ($post_date!=0)
+		{
+			//already posted, so we quit
+			return;
+		}
+		
+		if ($data=='')
+		{
+			return;
+		}
+		
+		
 		
 		if (in_array($this->settings['url_type'], array('pages', 'structure')))
 		{
@@ -442,6 +541,7 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 				'key'=>$this->module_settings[$this->settings['provider']]['app_id'], 
 				'secret'=>$this->module_settings[$this->settings['provider']]['app_secret']
 			);
+			$this->EE->load->add_package_path(PATH_THIRD.'social_update/');
             $this->EE->load->library($lib, $post_params);
             if ($lib=='facebook_oauth')
             {
@@ -461,6 +561,7 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 					$this->module_settings[$this->settings['provider']]['token_secret']
 				); 
             }
+            $this->EE->load->remove_package_path(PATH_THIRD.'social_update/');
             
             if (!empty($remote_post) && $remote_post['remote_user']!='' && $remote_post['remote_post_id']!='')
             {
@@ -484,11 +585,12 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
     function save_settings($data) 
 	{
         
+		/*
 		if ($this->EE->input->post('provider')=='')
         {
         	show_error(lang('select_provider'));
         }
-        
+        */
         return array(
 	        'provider'  => $this->EE->input->post('provider'),
 	        'url_type' => $this->EE->input->post('url_type'),
@@ -499,8 +601,11 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
    function post_save_settings($data)
    {
         $field_id = (isset($this->field_id) && $this->field_id!='') ? $this->field_id : $data['field_id'];
+        $col_id = (isset($this->col_id) && $this->col_id!='') ? $this->col_id : (isset($data['col_id'])?$data['col_id']:'');
 
         //update existing orphan records
+        if ($col_id=='') //only to non-matrix fields
+        {
         $q = $this->EE->db->select('post_id, entry_id')
 				->from('social_update_posts')
 				->where('service', $this->module_settings[$this->EE->input->post('provider')]['provider'])
@@ -521,7 +626,7 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 			$this->EE->db->where_in('post_id', $where);
 			$this->EE->db->update('social_update_posts', $upd);
 		}
-        
+        }
 		
         
 		
@@ -567,16 +672,60 @@ if ($('#ft_social_update select[name=url_type]').val()=='manual')
 	
     function display_cell_settings($data)
 	{
-	   return array();  
+
+	   $data = $this->_prepare_settings($data);
+	   
+	  /* $js = "
+$('#ft_social_update select[name=url_type]').change(function(){
+	if ($(this).val()=='manual') {
+		$('#ft_social_update input[name=show_url_field]').attr('checked', true);
+		$('#ft_social_update input[name=show_url_field]').attr('readonly', 'readonly');
+	}	
+	else
+	{
+		$('#ft_social_update input[name=show_url_field]').attr('readonly', false);
+	}
+});
+if ($('#ft_social_update select[name=url_type]').val()=='manual')
+{
+	$('#ft_social_update input[name=show_url_field]').attr('readonly', 'readonly');
+}
+		";
+		
+		$this->EE->javascript->output($js);
+		*/
+		
+		$data['url_options']['manual'] = lang('do_not_include_url');
+	   return array(
+	   		array(lang('provider'), form_dropdown("provider", $data['providers'], $data["provider"])),
+	   		array(lang('url_type'), form_dropdown("url_type", $data['url_options'], $data["url_type"])),
+	   		//array(lang('show_url_field'), form_checkbox("show_url_field", 'y', $data['show_url_field']))
+	   );  
     }
     
     function save_cell_settings($data) {
-		return $this->save_settings($data);
+		return $data;
+	}
+	
+	function validate_cell($data)
+	{
+		$this->cell_name = $this->settings['row_name'].'_'.$this->settings['col_name'];
+		return $this->validate($data);
 	}
     
 	function save_cell($data)
 	{
 		return $this->save($data);
+	}
+	
+	function post_save_cell($data)
+	{
+		$this->cell_name = $this->settings['row_name'].'_'.$this->settings['col_name'];
+		$this->col_id = $this->settings['col_id'];
+		$this->field_id = $this->settings['field_id'];
+		$this->col_name = $this->settings['col_name'];
+		$this->row_id = $this->settings['row_id'];
+		return $this->post_save($data);
 	}
     
 	// --------------------------------------------------------------------

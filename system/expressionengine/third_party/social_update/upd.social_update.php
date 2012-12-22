@@ -84,6 +84,8 @@ class Social_update_upd {
 			'channel_id'		=> array('type' => 'INT',		'unsigned' => TRUE, 'default' => 0),
 			'entry_id'			=> array('type' => 'INT',		'unsigned' => TRUE, 'default' => 0),
 			'field_id'			=> array('type' => 'INT',		'unsigned' => TRUE, 'default' => 0),
+			'col_id'			=> array('type' => 'INT',		'unsigned' => TRUE, 'default' => 0),
+			'row_id'			=> array('type' => 'INT',		'unsigned' => TRUE, 'default' => 0),
 			'service'			=> array('type' => 'VARCHAR',	'constraint'=> 128,	'default' => ''),
 			'post'				=> array('type' => 'TEXT',		'default' => ''),
 			'url'				=> array('type' => 'VARCHAR',	'constraint'=> 255,	'default' => ''),
@@ -197,7 +199,9 @@ class Social_update_upd {
         
         if ($current < 1.0) 
         { 
-            $this->EE->load->dbforge(); 
+            $upgraded = false;
+			
+			$this->EE->load->dbforge(); 
 			
 			//redo the settings
             $providers = array('twitter', 'facebook', 'linkedin');
@@ -254,7 +258,15 @@ class Social_update_upd {
 			
 			
 			//add column
-   			$this->EE->dbforge->add_column('social_update_posts', array('field_id' => array('type' => 'INT', 'unsigned' => TRUE, 'default' => 0) ) );
+			if ($this->EE->db->field_exists('field_id', 'social_update_posts') == FALSE)
+			{
+   				$this->EE->dbforge->add_column('social_update_posts', array('field_id' => array('type' => 'INT', 'unsigned' => TRUE, 'default' => 0) ) );
+   				$upgraded = true;
+			}
+			if ($this->EE->db->field_exists('row_id', 'social_update_posts') == FALSE)
+			{
+   				$this->EE->dbforge->add_column('social_update_posts', array('row_id' => array('type' => 'INT', 'unsigned' => TRUE, 'default' => 0) ) );
+			}
    			
    			//add action
    			$data = array( 'class' => 'Social_update' , 'method' => 'post_delayed' ); 
@@ -266,9 +278,26 @@ class Social_update_upd {
 			
 			//install extension
 			$this->EE->addons_installer->install_extension('social_update');
+			
+			if ($upgraded == true)
+			{
+				show_error(lang('social_update_is_now_fieldtype'), 500, lang('social_update').NBS.lang('warning'));
+			}
             
         } 
         
+        if ($current < 1.01) 
+        { 
+        	$this->EE->load->dbforge(); 
+			if ($this->EE->db->field_exists('col_id', 'social_update_posts') == FALSE)
+			{
+   				$this->EE->dbforge->add_column('social_update_posts', array('col_id' => array('type' => 'INT', 'unsigned' => TRUE, 'default' => 0) ) );
+			}
+			if ($this->EE->db->field_exists('row_id', 'social_update_posts') == FALSE)
+			{
+   				$this->EE->dbforge->add_column('social_update_posts', array('row_id' => array('type' => 'INT', 'unsigned' => TRUE, 'default' => 0) ) );
+			}
+        }
         
         
         

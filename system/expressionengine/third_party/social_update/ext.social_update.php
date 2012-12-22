@@ -43,15 +43,7 @@ class Social_update_ext {
 	function __construct($settings = '')
 	{
 		$this->EE =& get_instance();        
-        $query = $this->EE->db->select('settings')
-						->from('social_update_settings')
-	                    ->where('site_id', $this->EE->config->item('site_id'))
-	                    ->limit(1)
-						->get();
-		if ($query->num_rows()>0)
-		{
-			$this->settings = unserialize($query->row('settings'));
-		}
+        
         $this->EE->lang->loadfile('social_update');
 	}
     
@@ -124,7 +116,17 @@ class Social_update_ext {
     
     function prepare_pages_url($entry_id, $meta, $data)
     {
-    	$post = $this->EE->db->select('post_id, field_id')
+		$query = $this->EE->db->select('settings')
+						->from('social_update_settings')
+	                    ->where('site_id', $this->EE->config->item('site_id'))
+	                    ->limit(1)
+						->get();
+		if ($query->num_rows()>0)
+		{
+			$this->settings = unserialize($query->row('settings'));
+		}
+		
+		$post = $this->EE->db->select('post_id, field_id, col_id')
 			->from('social_update_posts')
 			->where('entry_id', $entry_id)
 			->where('post_date', 0)
@@ -140,16 +142,28 @@ class Social_update_ext {
 		foreach ($post->result_array() as $row)
 		{
 			//get field settings
-			if (!isset($field_settings[$row['field_id']]))
+			if (!isset($field_settings[$row['field_id']][$row['col_id']]))
             {
-            	$q = $this->EE->db->select('field_settings')
-            			->from('channel_fields')
-            			->where('field_id', $row['field_id'])
-            			->get();
-				$field_settings[$row['field_id']] = unserialize(base64_decode($q->row('field_settings')));
+            	if ($row['col_id']==0)
+            	{
+					$q = $this->EE->db->select('field_settings')
+	            			->from('channel_fields')
+	            			->where('field_id', $row['field_id'])
+	            			->get();
+					$field_settings[$row['field_id']][$row['col_id']] = unserialize(base64_decode($q->row('field_settings')));
+				}
+				else
+				{
+					$q = $this->EE->db->select('col_settings')
+	            			->from('matrix_cols')
+	            			->where('field_id', $row['field_id'])
+	            			->where('col_id', $row['col_id'])
+	            			->get();
+					$field_settings[$row['field_id']][$row['col_id']] = unserialize(base64_decode($q->row('col_settings')));
+				}
             }
             
-            if (in_array($field_settings[$row['field_id']]['url_type'], array('pages', 'structure')))
+            if (in_array($field_settings[$row['field_id']][$row['col_id']]['url_type'], array('pages', 'structure')))
             {
             	$this->EE->db->select('site_pages');
 				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));

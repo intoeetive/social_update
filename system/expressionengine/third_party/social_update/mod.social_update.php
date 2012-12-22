@@ -25,7 +25,13 @@ if ( ! defined('BASEPATH'))
 
 class Social_update {
 
-    var $return_data	= ''; 	
+    var $return_data	= ''; 
+	
+	var $maxlen 	= array(
+                        'twitter'  => 140,
+                        'facebook' => 420,
+                        'linkedin' => 700
+                    );	
     
     var $settings = array();
 
@@ -161,18 +167,30 @@ class Social_update {
 				
 	            $lib = $post_data['service'].'_oauth';
 	            
-	            if (!isset($field_settings[$post_data['field_id']]))
+	            if (!isset($field_settings[$post_data['field_id']][$post_data['col_id']]))
 	            {
-	            	$q = $this->EE->db->select('field_settings')
-	            			->from('channel_fields')
-	            			->where('field_id', $post_data['field_id'])
-	            			->get();
-					$field_settings[$post_data['field_id']] = unserialize(base64_decode($q->row('field_settings')));
+					if ($post_data['col_id']==0)
+	            	{
+						$q = $this->EE->db->select('field_settings')
+		            			->from('channel_fields')
+		            			->where('field_id', $post_data['field_id'])
+		            			->get();
+						$field_settings[$post_data['field_id']][$post_data['col_id']] = unserialize(base64_decode($q->row('field_settings')));
+					}
+					else
+					{
+						$q = $this->EE->db->select('col_settings')
+		            			->from('matrix_cols')
+		            			->where('field_id', $post_data['field_id'])
+		            			->where('col_id', $post_data['col_id'])
+		            			->get();
+						$field_settings[$post_data['field_id']][$post_data['col_id']] = unserialize(base64_decode($q->row('col_settings')));
+					}
 	            }
 	            
 	            $post_params = array(
-					'key'=>$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']]['provider']]['app_id'], 
-					'secret'=>$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']]['provider']]['app_secret']
+					'key'=>$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']][$post_data['col_id']]['provider']]['app_id'], 
+					'secret'=>$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']][$post_data['col_id']]['provider']]['app_secret']
 				);
 	            $this->EE->load->library($lib, $post_params);
 	            if ($lib=='facebook_oauth')
@@ -180,17 +198,17 @@ class Social_update {
 	                $remote_post = $this->EE->$lib->post(
 						$url, 
 						$data, 
-						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']]['provider']]['token'], 
-						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']]['provider']]['token_secret'], 
-						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']]['provider']]['username']
+						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']][$post_data['col_id']]['provider']]['token'], 
+						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']][$post_data['col_id']]['provider']]['token_secret'], 
+						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']][$post_data['col_id']]['provider']]['username']
 					); 
 	            }
 	            else
 	            {
 	                $remote_post = $this->EE->$lib->post(
 						$data." ".$url, 
-						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']]['provider']]['token'], 
-						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']]['provider']]['token_secret']
+						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']][$post_data['col_id']]['provider']]['token'], 
+						$module_settings[$post_data['site_id']][$field_settings[$post_data['field_id']][$post_data['col_id']]['provider']]['token_secret']
 					); 
 	            }
 	            

@@ -89,6 +89,9 @@ $lang = array(
 "linkedin_counter" =>
 ", <span id=\"linkedin_chars_avail\">650</span> chars left",
 
+"char_counter" =>
+"Max <span id=\"total\">120</span> characters, <span id=\"avail\">120</span> chars left",
+
 "url_base" =>
 "URL is based on:",
 
@@ -156,7 +159,7 @@ $lang = array(
 'Add new app',
 
 'social_update_is_now_fieldtype' =>
-'Social Update is now a fieldtype. You should create custom channel fields in order to post to social networks. Please see the docs for more details.',
+'Social Update is now a fieldtype. You should create custom channel fields in order to post to social networks. Please see the <a href="http://www.intoeetive.com/docs/social_update.html">docs</a> for more details.',
 
 'add' =>
 'Add',
@@ -172,6 +175,9 @@ $lang = array(
 
 'force_url_shortening' =>
 'Force URL shortening',
+
+'warning' =>
+'warning',
 
 /* END */
 ''=>''

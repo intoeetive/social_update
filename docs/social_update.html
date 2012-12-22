@@ -64,7 +64,7 @@ When you install Social Update, Shorteen will also be installed automatically.</
 <p>You also have to provide the desired service you would like to use for links shortening. For detailed shortening setup, go to Shorteen module settings.</p> 
 <p>By default, the links are only shortened if the total length of post + link is greater than size allowed by social network. If you want to force links to be always shortened, you have an option to do so.</p>
 <p>The fieldtype includes dynamic characters counter showing how many characters you can enter for the post. If you need to disable it, you have option to do so.</p>
-<p>You can also specify the default URL scheme that your site follows (can be changed on per-custom-field basis).</p>
+<p>You can also specify the default URL scheme that your site follows (can be changed on per-custom-field basis). It will be used as default when creating custom field and will also serve as 'fallback' scheme if URL is based on Pages/Structure module and Page URL is not available.</p>
 
  	<h3><a name="authorize"></a>Adding social accounts</h3>
     
@@ -84,7 +84,8 @@ When you install Social Update, Shorteen will also be installed automatically.</
   	<h3><a name="fields"></a>Adding custom fields</h3>
   	
 <p>Social Update allows you to use custom channel fields to enter the content of post to be made to social network (and optionally URL).</p>
-<p>Custom fields can be used on Publish page in Control Panel and in Safecracker. You can also use them in Matrix.</p>  	
+<p>Custom fields can be used on Publish page in Control Panel and in Safecracker. You can also use them in Matrix.</p>  
+<p>Be aware that Matrix fields are limited comparing to regular channel fields: they cannot include field to override automatic URL and characters counter.</p>	
 
 <p>There are 3 settings for custom field of Social Update type:</p>
 <p><strong>Social network</strong> - the wall/page to post to (pre-authorized on module settings page)</p>

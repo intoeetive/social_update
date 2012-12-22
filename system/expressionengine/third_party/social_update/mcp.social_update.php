@@ -318,8 +318,8 @@ class Social_update_mcp {
 						'app_id'		=> $_POST["app_id"]["$app_id"],
 	                	'app_secret'	=> $_POST["app_secret"]["$app_id"],
 	                	'token'			=> $_POST["token"]["$app_id"],
-	                	'token_secret'	=> $_POST["token_secret"]["$app_id"],
-	                	'username'		=> $_POST["username"]["$app_id"],
+	                	'token_secret'	=> (isset($_POST["token_secret"]["$app_id"]))?$_POST["token_secret"]["$app_id"]:'',
+	                	'username'		=> (isset($_POST["username"]["$app_id"]))?$_POST["username"]["$app_id"]:'',
 	                	'post_as_page'	=> isset($_POST["post_as_page"]["$app_id"])?$_POST["post_as_page"]["$app_id"]:''
 					);
 	            }
@@ -342,8 +342,8 @@ class Social_update_mcp {
 				'app_id'		=> $_POST["app_id"]["new_app"],
             	'app_secret'	=> $_POST["app_secret"]["new_app"],
             	'token'			=> $_POST["token"]["new_app"],
-            	'token_secret'	=> $_POST["token_secret"]["new_app"],
-            	'username'		=> $_POST["username"]["new_app"],
+            	'token_secret'	=> (isset($_POST["token_secret"]["new_app"]))?$_POST["token_secret"]["new_app"]:'',
+            	'username'		=> (isset($_POST["username"]["new_app"]))?$_POST["username"]["new_app"]:'',
             	'post_as_page'	=> isset($_POST["post_as_page"]["new_app"])?$_POST["post_as_page"]["new_app"]:''
 			);
 			
