@@ -143,7 +143,7 @@ class Social_update {
 				$data = $post_data['post'];
 				$url = $post_data['url'];
 				//shorten the stuff
-				if ($url!='' && (strlen($data." ".$url) > $this->maxlen[$service] || $module_settings['force_url_shortening']=='y'))
+				if ($url!='' && (strlen($data." ".$url) > $this->maxlen[$post_data['service']] || $module_settings[$post_data['site_id']]['force_url_shortening']=='y'))
 		        {
 		            if ( ! class_exists('Shorteen'))
 		        	{
@@ -152,7 +152,7 @@ class Social_update {
 		        	
 		        	$SHORTEEN = new Shorteen();
 		            
-		            $shorturl = $SHORTEEN->process($module_settings['url_shortening_service'], $url, true);
+		            $shorturl = $SHORTEEN->process($module_settings[$post_data['site_id']]['url_shortening_service'], $url, true);
 		            if ($shorturl!='')
 		            {
 		                $url = $shorturl;
@@ -160,9 +160,9 @@ class Social_update {
 		        }
 		        //still too long? truncate the message
 		        //at least one URL should always be included
-		        if (strlen($data." ".$url) > $this->maxlen[$service])
+		        if (strlen($data." ".$url) > $this->maxlen[$post_data['service']])
 		        {
-		            $data = $this->_char_limit($data, ($this->maxlen[$service]-strlen($url)-1));
+		            $data = $this->_char_limit($data, ($this->maxlen[$post_data['service']]-strlen($url)-1));
 		        }            
 				
 	            $lib = $post_data['service'].'_oauth';
