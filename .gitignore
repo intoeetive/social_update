@@ -1,0 +1,6 @@
+.*
+!.gitignore
+!.htaccess
+*.zip
+
+social_update-*
