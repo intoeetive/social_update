@@ -48,7 +48,7 @@ class facebook_oauth
     public function get_request_token($callback)
     {
 
-        $redirect = self::SCHEME.'://'.self::HOST.self::AUTHORIZE_URI."?type=web_server&scope=publish_stream,manage_pages,offline_access&client_id=".$this->_consumer['key']."&redirect_uri=".urlencode($callback);
+        $redirect = "https://www.facebook.com/dialog/oauth?response_type=code&scope=publish_actions,manage_pages,offline_access&client_id=".$this->_consumer['key']."&redirect_uri=".urlencode($callback);
 
         header("Location: $redirect");
         exit();
@@ -72,7 +72,7 @@ class facebook_oauth
   
         if($secret !== false)$tokenddata['oauth_token_secret'] = urlencode($secret);
 
-        $baseurl = self::SCHEME.'://'.self::HOST.self::ACCESS_URI."?client_id=".$this->_consumer['key']."&redirect_uri=".urlencode($callback)."&client_secret=".$this->_consumer['secret']."&code=$secret";
+        $baseurl = "https://graph.facebook.com/oauth/access_token?client_id=".$this->_consumer['key']."&redirect_uri=".urlencode($callback)."&client_secret=".$this->_consumer['secret']."&code=$secret";
 
         $response = $this->_connect($baseurl, '');
 
@@ -99,7 +99,9 @@ class facebook_oauth
         }   
         //Return the token and secret for storage
         
-        $baseurl = self::SCHEME.'://'.self::HOST.self::USERINFO_URI."?&access_token=".$oauth['access_token'];
+        $appsecret_proof= hash_hmac('sha256', $oauth['access_token'], $this->_consumer['secret']);
+        
+        $baseurl = self::SCHEME.'://'.self::HOST.self::USERINFO_URI."?access_token=".$oauth['access_token']."&appsecret_proof=".$appsecret_proof;
         $response = $this->_connect($baseurl, array());
         if (function_exists('json_decode'))
         {
@@ -111,6 +113,9 @@ class facebook_oauth
             $json = new Services_JSON();
             $me = $json->decode($response);
         }
+        
+        //var_dump($me);
+        //exit();
         
         $pages = array($me->id => $me->name);   
         $tokens = array($me->id => $oauth['access_token']);   
@@ -158,7 +163,7 @@ class facebook_oauth
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC ) ;
-        curl_setopt($ch, CURLOPT_SSLVERSION,3);
+        //curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -197,7 +202,7 @@ class facebook_oauth
                 
         $ch = curl_init($baseurl);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC ) ;
-        curl_setopt($ch, CURLOPT_SSLVERSION,3);
+        //curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -179,6 +179,9 @@ $lang = array(
 'warning' =>
 'warning',
 
+'do_not_shorten' =>
+'Do not shorten',
+
 /* END */
 ''=>''
 );

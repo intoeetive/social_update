@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://www.intoeetive.com/
 -----------------------------------------------------
- Copyright (c) 2011-2012 Yuri Salimovskiy
+ Copyright (c) 2011-2014 Yuri Salimovskiy
 =====================================================
  This software is intended for usage with
  ExpressionEngine CMS, version 2.0 or higher
@@ -252,7 +252,8 @@ class Social_update_mcp {
                                     'bitly'=>lang('bitly'),
                                     'yourls'=>lang('yourls'),
                                     'lessn-more'=>lang('lessn-more'),
-                                    'cloud-app'=>lang('cloud-app')
+                                    'cloud-app'=>lang('cloud-app'),
+                                    'none'=>lang('do_not_shorten')
                                 );
         
         $vars['settings']['url_shortening_service']	= form_dropdown('url_shortening_service', $url_shortening_services, (isset($this->settings['url_shortening_service'])?$this->settings['url_shortening_service']:'googl'));

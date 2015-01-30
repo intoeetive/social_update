@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://www.intoeetive.com/
 -----------------------------------------------------
- Copyright (c) 2011-2012 Yuri Salimovskiy
+ Copyright (c) 2011-2014 Yuri Salimovskiy
 =====================================================
  This software is intended for usage with
  ExpressionEngine CMS, version 2.0 or higher
@@ -117,7 +117,7 @@ class Social_update_ft extends EE_Fieldtype {
         $data['url_options']['site_url'] = lang('site_url');
         $data['url_options']['manual'] = lang('url_manual');
         
-		$data["url_type"] = (isset($data["url_type"])) ? $data["url_type"] : $this->module_settings['default_url_type']; 
+		$data["url_type"] = (isset($data["url_type"])) ? $data["url_type"] : (isset($this->module_settings['default_url_type'])?$this->module_settings['default_url_type']:'url_title'); 
 		$data['show_url_field'] = (isset($data["show_url_field"]) && $data["show_url_field"]=='y') ? true:false; 
 		
 		return $data;
@@ -518,7 +518,7 @@ $('#".$field_id_attr."').maxlength({
 		{
 			
 			//shorten the stuff
-			if ($url!='' && (strlen($data." ".$url) > $this->maxlen[$service] || $this->module_settings['force_url_shortening']=='y'))
+			if ($this->module_settings['url_shortening_service']!='none' && $url!='' && (strlen($data." ".$url) > $this->maxlen[$service] || $this->module_settings['force_url_shortening']=='y'))
 	        {
 	            if ( ! class_exists('Shorteen'))
 	        	{

@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://www.intoeetive.com/
 -----------------------------------------------------
- Copyright (c) 2011-2012 Yuri Salimovskiy
+ Copyright (c) 2011-2014 Yuri Salimovskiy
 =====================================================
  This software is intended for usage with
  ExpressionEngine CMS, version 2.0 or higher
@@ -87,7 +87,7 @@ class Social_update_upd {
 			'col_id'			=> array('type' => 'INT',		'unsigned' => TRUE, 'default' => 0),
 			'row_id'			=> array('type' => 'INT',		'unsigned' => TRUE, 'default' => 0),
 			'service'			=> array('type' => 'VARCHAR',	'constraint'=> 128,	'default' => ''),
-			'post'				=> array('type' => 'TEXT',		'default' => ''),
+			'post'				=> array('type' => 'TEXT'),
 			'url'				=> array('type' => 'VARCHAR',	'constraint'=> 255,	'default' => ''),
 			'post_date'			=> array('type' => 'INT',		'unsigned' => TRUE, 'default' => 0),
 			'remote_user'		=> array('type' => 'VARCHAR',	'constraint'=> 128,	'default' => ''),
@@ -286,7 +286,7 @@ class Social_update_upd {
             
         } 
         
-        if ($current < 1.01) 
+        if ($current < 1.1) 
         { 
         	$this->EE->load->dbforge(); 
 			if ($this->EE->db->field_exists('col_id', 'social_update_posts') == FALSE)

@@ -178,15 +178,15 @@ class Shorteen {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Shorteen ExpressionEngine Add-on');
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($ch, CURLOPT_SSLVERSION,3);
+        //curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if (ini_get('open_basedir') == '' && ini_get('safe_mode' == 'Off'))
         {
             curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, '/dev/null');
         }
-        curl_setopt($ch, CURLOPT_COOKIEFILE, '/dev/null');
         if ($auth_type=='digest')
         {
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
@@ -228,16 +228,16 @@ class Shorteen {
         switch ($service)
         {
             case 'googl':
-                $shorturl = $rawdata->id;
+                $shorturl = trim($rawdata->id);
                 break;
             case 'cloud-app':
                 if (isset($rawdata))
                 {
-                    $shorturl = $rawdata->url;
+                    $shorturl = trim($rawdata->url);
                 }
                 break;
             default:
-                $shorturl = $response;
+                $shorturl = trim($response);
                 break;
         }
 

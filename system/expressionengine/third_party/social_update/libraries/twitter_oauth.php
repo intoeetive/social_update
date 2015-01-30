@@ -131,7 +131,7 @@ class twitter_oauth
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC ) ;
-        curl_setopt($ch, CURLOPT_SSLVERSION,3);
+        //curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -146,7 +146,7 @@ class twitter_oauth
 
     function post($message, $oauth_token='', $oauth_token_secret='', $userid='me', $usertoken='')
     {
-        $baseurl = "http://api.twitter.com/1.1/statuses/update.json"; 
+        $baseurl = "https://api.twitter.com/1.1/statuses/update.json"; 
         $fields = array(
             'status'=>urlencode($message)
         );
@@ -168,7 +168,7 @@ class twitter_oauth
       
         $ch = curl_init($oauth['signed_url']);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC ) ;
-        curl_setopt($ch, CURLOPT_SSLVERSION,3);
+        //curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
