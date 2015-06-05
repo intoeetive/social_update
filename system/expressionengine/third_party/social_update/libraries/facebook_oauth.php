@@ -48,7 +48,7 @@ class facebook_oauth
     public function get_request_token($callback)
     {
 
-        $redirect = "https://www.facebook.com/dialog/oauth?response_type=code&scope=publish_actions,manage_pages,offline_access&client_id=".$this->_consumer['key']."&redirect_uri=".urlencode($callback);
+        $redirect = "https://www.facebook.com/dialog/oauth?response_type=code&scope=publish_actions,manage_pages,publish_pages&client_id=".$this->_consumer['key']."&redirect_uri=".urlencode($callback);
 
         header("Location: $redirect");
         exit();

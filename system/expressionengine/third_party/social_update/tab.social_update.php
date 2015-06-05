@@ -24,7 +24,7 @@ if ( ! defined('BASEPATH'))
 
 class Social_update_tab {
     
-    var $providers = array('twitter', 'facebook', 'linkedin');
+    var $providers = array('twitter', 'facebook');//, 'linkedin');
     var $maxlen 		= array(
                                 'twitter'  => 140,
                                 'facebook' => 420,

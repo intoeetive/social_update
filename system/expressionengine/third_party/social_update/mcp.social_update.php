@@ -150,7 +150,8 @@ class Social_update_mcp {
 		$data['fields'] = array(	
             0 => array(
                     'label'=>lang('provider'),
-                    'field'=>form_dropdown("provider[new_app]", array('twitter'=>lang('twitter'), 'facebook'=>lang('facebook'), 'linkedin'=>lang('linkedin')), $provider, $select_field_attrs)
+                    //'field'=>form_dropdown("provider[new_app]", array('twitter'=>lang('twitter'), 'facebook'=>lang('facebook'), 'linkedin'=>lang('linkedin')), $provider, $select_field_attrs)
+                    'field'=>form_dropdown("provider[new_app]", array('twitter'=>lang('twitter'), 'facebook'=>lang('facebook')), $provider, $select_field_attrs)
                 )
             );
         
@@ -294,7 +295,7 @@ class Social_update_mcp {
         
         $this->EE->javascript->output(str_replace(array("\n", "\t"), '', $outputjs));
         
-        if ($this->EE->config->item('app_version')>=260)
+        if (version_compare(APP_VER, '2.6.0', '>='))
         {
         	$this->EE->view->cp_page_title = lang('social_update_module_name');
         }

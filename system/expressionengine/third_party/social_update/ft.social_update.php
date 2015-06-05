@@ -262,7 +262,7 @@ $('#".$field_id_attr."').maxlength({
 			{
 				$datestr = '%Y-%m-%d %H:%i';
 			}
-			if ($this->EE->config->item('app_version')>=260)
+			if (version_compare(APP_VER, '2.6.0', '>='))
         	{
 				$input .= '<p><em>'.lang('sent_on').$this->EE->localize->format_date($datestr, $row['post_date'], TRUE).'</em></p>';
 			}
