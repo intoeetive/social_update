@@ -3,7 +3,7 @@
 if ( ! defined('SOCIAL_UPDATE_ADDON_NAME'))
 {
 	define('SOCIAL_UPDATE_ADDON_NAME',         'Social Update');
-	define('SOCIAL_UPDATE_ADDON_VERSION',      '1.1.5');
+	define('SOCIAL_UPDATE_ADDON_VERSION',      '1.1.6');
 }
 
 $config['name'] = SOCIAL_UPDATE_ADDON_NAME;

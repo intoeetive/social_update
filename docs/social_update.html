@@ -62,7 +62,7 @@ When you install Social Update, Shorteen will also be installed automatically.</
     
 <p>The 'general' settings include entry statuses that will trigger social update (by default, social posts are made only for entries with 'open' status).</p>   
 <p>You also have to provide the desired service you would like to use for links shortening. For detailed shortening setup, go to Shorteen module settings.</p> 
-<p>By default, the links are only shortened if the total length of post + link is greater than size allowed by social network. If you want to force links to be always shortened, you have an option to do so.</p>
+<p>By default, the links are only shortened if the total length of post + link is greater than size allowed by social network. If you want to force links to be always shortened, you have an option to do so. You can also disable URL shortening by setting shortening service to 'none'.</p>
 <p>The fieldtype includes dynamic characters counter showing how many characters you can enter for the post. If you need to disable it, you have option to do so.</p>
 <p>You can also specify the default URL scheme that your site follows (can be changed on per-custom-field basis). It will be used as default when creating custom field and will also serve as 'fallback' scheme if URL is based on Pages/Structure module and Page URL is not available.</p>
 
@@ -75,7 +75,8 @@ When you install Social Update, Shorteen will also be installed automatically.</
 <p>To get your site authorized for <strong>Facebook</strong> posts, enter your Application ID and Secret Key for Facebook API. If you don't have API App ID &amp; secret, you can obtain them here: <a href="http://developers.facebook.com/setup/" target="_blank">http://developers.facebook.com/setup/</a>.</p>
 <p>If you administer several pages on Facebook, you are able to choose where you want to post after authorizing.</p>
 
-<p>To get your site authorized for <strong>LinkedIn</strong> posts, enter your API Key and Secret Key for LinkedIn API. If you don't have API App ID &amp; secret, you can obtain them here: <a href="https://www.linkedin.com/secure/developer" target="_blank">https://www.linkedin.com/secure/developer</a>.</p>
+<!--
+<p>To get your site authorized for <strong>LinkedIn</strong> posts, enter your API Key and Secret Key for LinkedIn API. If you don't have API App ID &amp; secret, you can obtain them here: <a href="https://www.linkedin.com/secure/developer" target="_blank">https://www.linkedin.com/secure/developer</a>.</p>-->
 
 <p>You can add as many social accounts as you need, but one custom channel field is always used for one account.</p>   
 
@@ -91,6 +92,8 @@ When you install Social Update, Shorteen will also be installed automatically.</
 <p><strong>Social network</strong> - the wall/page to post to (pre-authorized on module settings page)</p>
 <p><strong>URL type</strong> - select the method that should be used to generate URL attached to the post. If you select any automatic module, make sure the Comment page URL/Channel URL are set in channel preferences.</p>
 <p><strong>Show input to override URL</strong> - if checked, editors will be able to enter URL to include with the post (will override automatically generated). This might be useful in some cases, e.g. if you include category name within page URL. Note this needs to be full URL, starting with http://</p>
+
+<p>Do not forget to re-save custom field if you re-authorize app or change settings.</p>
  
   	<h3><a name="scheduled"></a>Scheduled posting</h3>
   	

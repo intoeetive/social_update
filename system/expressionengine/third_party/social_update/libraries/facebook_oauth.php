@@ -183,7 +183,7 @@ class facebook_oauth
         
         if ($link!='')
         {
-          $baseurl = self::SCHEME.'://'.self::HOST.'/'.$userid."/links?access_token=".$oauth_token;
+          $baseurl = self::SCHEME.'://'.self::HOST.'/'.$userid."/feed?access_token=".$oauth_token;
 		  $fields = array(
               'link'=>$link,
               'message'=>urlencode($message)
