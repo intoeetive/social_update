@@ -363,13 +363,6 @@ $('#".$field_id_attr."').maxlength({
 		
 		$entry_id = $this->settings['entry_id'];
 		$data = (isset($this->EE->session->cache['social_update'][$name]))?$this->EE->session->cache['social_update'][$name]:'';
-
-		//if field is empty, return
-		
-		if ($data=='' && !isset($this->cell_name))
-		{
-			return;
-		}
 		
 		$service = $this->module_settings[$this->settings['provider']]['provider'];
 		
@@ -443,6 +436,10 @@ $('#".$field_id_attr."').maxlength({
 				
 				$this->EE->db->where('post_id', $post_id);
 				$this->EE->db->update('social_update_posts', $upd);
+			}else{
+				//if the field has been emptied remove the post
+				$this->EE->db->where('post_id', $post_id);
+				$this->EE->db->delete('social_update_posts');
 			}
 			
 		}
